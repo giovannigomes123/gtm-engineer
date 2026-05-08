@@ -1,0 +1,1271 @@
+{
+  "name": "AI qualificator Agent",
+  "nodes": [
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1XkRpo_u06IhdHL57ViM05GQmdNGpj3HHjDF5fsROQ0E",
+          "mode": "list",
+          "cachedResultName": "Planilha Leads Synapso",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1XkRpo_u06IhdHL57ViM05GQmdNGpj3HHjDF5fsROQ0E/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Página1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1XkRpo_u06IhdHL57ViM05GQmdNGpj3HHjDF5fsROQ0E/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "ICP?"
+            },
+            {
+              "lookupColumn": "Decisor?"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        720,
+        -192
+      ],
+      "id": "5fc0016a-eab0-4377-b95f-6989db17e5a4",
+      "name": "Get row(s) in sheet1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "479PdELkIbVgs67c",
+          "name": "Google Sheets - Giovanni"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        1008,
+        -192
+      ],
+      "id": "bde4c582-0cc1-449f-9729-7ceb3fd68bf4",
+      "name": "Loop Over Items2"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "67cdd3cb-90e6-4306-bc3d-f3ad1b2ee2c6",
+              "name": "Nome",
+              "value": "={{ $('Get row(s) in sheet1').item.json.Nome }}",
+              "type": "string"
+            },
+            {
+              "id": "aef9519c-a570-420e-a977-4cd88ddb8a32",
+              "name": "Headline",
+              "value": "={{ $('Get row(s) in sheet1').item.json.Headline }}",
+              "type": "string"
+            },
+            {
+              "id": "bcbc6bb2-310c-4733-b182-0f2fafb50954",
+              "name": "URL",
+              "value": "={{ $('Get row(s) in sheet1').item.json['URL LinkedIn'] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1216,
+        -128
+      ],
+      "id": "34a45a72-3076-494f-953b-8ca79e38d20a",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "787993d1-0576-49f0-be97-62d0ecdd6f42",
+              "leftValue": "={{ $json.experience[0].duration }}",
+              "rightValue": "Present",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1664,
+        -128
+      ],
+      "id": "a31a67eb-ac61-4895-ae0b-2f0705159183",
+      "name": "Has company?"
+    },
+    {
+      "parameters": {
+        "url": "https://api.apify.com/v2/acts/apimaestro~linkedin-profile-detail/run-sync-get-dataset-items?token=apify_api_8vw9TKvViWVEZBvbfGX9nDXizdS61Z36zkVG",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n    \"includeEmail\": true,\n    \"username\": \"{{ $('Get row(s) in sheet1').item.json['URL LinkedIn'] }}\"\n} ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        1424,
+        -128
+      ],
+      "id": "361c7bb4-114f-48f5-a25f-d62fa71d0d13",
+      "name": "Get profile Data"
+    },
+    {
+      "parameters": {
+        "url": "https://api.apify.com/v2/acts/apimaestro~linkedin-company-detail/run-sync-get-dataset-items?token=apify_api_8vw9TKvViWVEZBvbfGX9nDXizdS61Z36zkVG",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n    \"identifier\": [\n        \"{{ $json.experience[0].company_linkedin_url }}\"\n    ]\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        1936,
+        -496
+      ],
+      "id": "9e20afb1-84bb-495e-a0c8-86385c2f96b2",
+      "name": "Get Company Data"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a0010724-9406-4e51-afd7-b5430744d799",
+              "name": "Nome",
+              "value": "={{ $('Get profile Data').item.json.basic_info.fullname }}",
+              "type": "string"
+            },
+            {
+              "id": "ced8d263-85d9-4872-b97d-d78529556ea5",
+              "name": "Headline",
+              "value": "={{ $('Get profile Data').item.json.basic_info.headline }}",
+              "type": "string"
+            },
+            {
+              "id": "d9ea980a-cece-4803-82d9-84479ea44e8e",
+              "name": "Cargo",
+              "value": "={{ $('Get profile Data').item.json.experience[0].title }}",
+              "type": "string"
+            },
+            {
+              "id": "40bf6d5b-7daf-4a04-afee-026833824b1f",
+              "name": "Sobre",
+              "value": "={{ $('Get profile Data').item.json.basic_info.about }}",
+              "type": "string"
+            },
+            {
+              "id": "4e13560f-3ae7-4793-aa21-f25d92334e1a",
+              "name": "Empresa",
+              "value": "={{ $json.basic_info.universal_name }}",
+              "type": "string"
+            },
+            {
+              "id": "7aecf6e0-72d5-4c9d-8099-0f97a503de21",
+              "name": "Descrição",
+              "value": "={{ $json.basic_info.description }}",
+              "type": "string"
+            },
+            {
+              "id": "a1b682ff-117d-433b-b51e-2b23de000a5b",
+              "name": "Numero de funcionarios",
+              "value": "={{ $json.stats.employee_count }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2160,
+        -496
+      ],
+      "id": "4b918d31-0e36-4b21-917c-682518b24439",
+      "name": "All Prospect Data"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n\t\"ICP\": \"Sim/Não\",\n\t\"Decisor\": \"Sim/Não\",\n    \"Justificativa Decisor\": \"Porque sim ou não de Decisor\",\n    \"Justificativa ICP\": \"Porque sim ou não de ICP\"\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        2800,
+        -176
+      ],
+      "id": "3d4d9edb-91d6-4e7e-93ea-bc76887c4e75",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=**EMPRESA:**\nNome da empresa: {{ $json.Empresa }}\nDescrição: {{ $json['Descrição'] }}\nNúmero de funcionários: {{ $json['Numero de funcionarios'] }}\n\n\n**PESSOA:**\nNome: {{ $json.Nome }}\nCargo: {{ $json.Cargo }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "Você é o analista automático de qualificação da Cloud Humans.\n\nSua função é qualificar contas com rigor, priorizando empresas com forte potencial de fit operacional para soluções de IA aplicada ao atendimento e experiência do cliente.\n\nSeu objetivo NÃO é maximizar volume.\nSeu objetivo é identificar empresas com dores reais de escala operacional, atendimento e eficiência.\n\nVocê deve ser conservador.\nNa dúvida, prefira NÃO ou INDEFINIDO.\n\n---\n\n# MISSÃO\n\nSua missão é:\n\n1. Classificar se a empresa é ICP para a Cloud Humans\n2. Determinar se a pessoa é um stakeholder relevante para uma conversa consultiva\n3. Identificar sinais reais de fit operacional\n4. Evitar contas sem maturidade, sem dor clara ou sem potencial de escala\n\n---\n\n# CONTEXTO CLOUD HUMANS\n\nA Cloud Humans ajuda empresas digitais a escalar atendimento e operações utilizando IA aplicada à experiência do cliente.\n\nPrincipais soluções:\n- ClaudIA → agente de IA para atendimento\n- Cloud Chat → centralização de canais e WhatsApp\n- automação operacional\n- IA aplicada a CX e suporte\n- redução de carga operacional\n- melhoria de SLA e eficiência\n\nA abordagem é consultiva e orientada a eficiência operacional.\n\n---\n\n# INPUT ESPERADO\n\nEMPRESA\nNome: {{ $json.Empresa }}\nDescrição: {{ $json['Descrição'] }}\nNúmero de funcionários: {{ $json['Numero de funcionarios'] }}\nSite: {{ $json.Site }}\nLinkedIn: {{ $json.LinkedInEmpresa }}\n\nPESSOA\nNome: {{ $json.Nome }}\nCargo: {{ $json.Cargo }}\nLinkedIn: {{ $json.LinkedInPessoa }}\n\n---\n\n# FILTROS ELIMINATÓRIOS (VETO AUTOMÁTICO)\n\nSe qualquer condição abaixo for verdadeira, marque ICP: NÃO.\n\n• Empresa extremamente pequena sem operação relevante\n• Freelancer ou operação individual\n• Empresa sem sinais de atendimento, suporte ou relacionamento recorrente\n• Empresa puramente técnica sem operação de CX relevante\n• Empresa sem potencial de escala operacional\n• Empresa sem presença digital mínima\n• Empresa sem qualquer indício de uso de canais digitais\n• Empresa claramente fora do ICP de operações digitais\n\n---\n\n# CRITÉRIOS OBRIGATÓRIOS PARA ICP CLOUD HUMANS\n\nA empresa só pode ser ICP se TODOS os critérios abaixo forem atendidos:\n\n---\n\n## 1️⃣ Operação digital relevante\n\nA empresa deve possuir:\n• produto digital\nOU\n• operação digital forte\nOU\n• relacionamento recorrente com clientes\n\nProcure sinais de:\n- SaaS\n- fintech\n- e-commerce\n- marketplace\n- healthtech\n- operação online relevante\n- suporte digital\n- onboarding digital\n\nSem operação digital → ICP NÃO.\n\n---\n\n## 2️⃣ Potencial de escala operacional\n\nA empresa deve aparentar:\n• crescimento\n• volume operacional\n• múltiplos clientes\n• necessidade de eficiência\n\nProcure sinais de:\n- expansão\n- crescimento\n- suporte recorrente\n- onboarding\n- operação complexa\n- atendimento frequente\n\nSem potencial de escala → ICP NÃO.\n\n---\n\n## 3️⃣ Dor operacional plausível\n\nProcure sinais de:\n• necessidade de atendimento\n• volume de suporte\n• múltiplos canais\n• onboarding\n• SLA\n• operações repetitivas\n• necessidade de eficiência\n• possível uso de WhatsApp\n• relacionamento recorrente com clientes\n\nSem hipótese operacional plausível → ICP NÃO.\n\n---\n\n## 4️⃣ Maturidade mínima\n\nA empresa deve aparentar:\n• organização operacional mínima\n• presença digital relevante\n• estrutura suficiente para adoção de IA\n\nEmpresas extremamente pequenas ou desestruturadas → ICP NÃO.\n\n---\n\n# CRITÉRIOS DESEJÁVEIS\n\nNão são obrigatórios, mas aumentam o fit:\n\n• sinais públicos relacionados a IA\n• iniciativas de automação\n• foco em experiência do cliente\n• operação multicanal\n• uso de WhatsApp\n• presença forte em LinkedIn\n• crescimento recente\n• estrutura de CX ou suporte\n\n---\n\n# CRITÉRIOS PARA STAKEHOLDER\n\nConsidere STAKEHOLDER SIM apenas se houver influência real sobre:\n- operação\n- atendimento\n- CX\n- eficiência\n- produto\n- crescimento\n\n---\n\n# STAKEHOLDER SIM\n\n• CEO\n• Founder\n• COO\n• Head de CX\n• Head de Support\n• Head de Operations\n• Head de Customer Success\n• Head de Product\n• Head de AI\n• Diretor relevante\n• Gerente com responsabilidade operacional clara\n\n---\n\n# STAKEHOLDER NÃO\n\n• Analista operacional\n• Assistente\n• SDR operacional\n• Estagiário\n• Desenvolvedor sem influência operacional\n• Cargo sem relação com operação/CX\n\n---\n\n# STAKEHOLDER INDEFINIDO\n\nSe o cargo for ambíguo ou sem evidência clara de influência.\n\n---\n\n# REGRAS DE JULGAMENTO\n\n• Nunca force um SIM\n• Não invente dores inexistentes\n• Não considere apenas \"empresa tech\" como fit automático\n• Priorize sinais operacionais reais\n• Se faltar informação crítica → INDEFINIDO\n• Cite exatamente quais sinais levaram à decisão\n• Seja objetivo e conservador\n\n---\n\n# FORMATO FINAL DE RESPOSTA (OBRIGATÓRIO)\n\nICP: SIM / NÃO / INDEFINIDO\n[Explicação objetiva baseada nos critérios]\n\nSTAKEHOLDER: SIM / NÃO / INDEFINIDO\n[Explicação objetiva baseada no cargo]\n\nSINAIS IDENTIFICADOS:\n- [lista objetiva]\n\nHIPÓTESES OPERACIONAIS:\n- [lista objetiva]\n\nSe faltar informação crítica, cite explicitamente.\n\n---\n\n# POSTURA DO AGENTE\n\nVocê pensa como um GTM Engineer sênior da Cloud Humans.\n\nSeu objetivo é priorizar qualidade e relevância operacional, evitando spam e contas sem potencial real de geração de valor."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        2592,
+        -496
+      ],
+      "id": "9086db1f-572b-434a-a59e-f53bc8f8fb78",
+      "name": "Analisador de Prospects",
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-5.2",
+          "mode": "list",
+          "cachedResultName": "gpt-5.2"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        2592,
+        -336
+      ],
+      "id": "28956e21-7a5e-4a57-9dfc-0bf1e1c5f80e",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "i7mWFBHDgvfkKOyf",
+          "name": "Giovanni_Credential"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1XkRpo_u06IhdHL57ViM05GQmdNGpj3HHjDF5fsROQ0E",
+          "mode": "list",
+          "cachedResultName": "Planilha Leads Synapso",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1XkRpo_u06IhdHL57ViM05GQmdNGpj3HHjDF5fsROQ0E/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Página1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1XkRpo_u06IhdHL57ViM05GQmdNGpj3HHjDF5fsROQ0E/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "URL LinkedIn": "={{ \n  $node[\"Get profile Data\"].json.basic_info?.profile_url\n    ? $node[\"Get profile Data\"].json.basic_info.profile_url\n        .split('?')[0]                  // remove parâmetros\n        .replace(/^https?:\\/\\/(www\\.)?/, 'https://www.') // garante www.\n        .replace(/\\/+$/, '')            // remove barra no final\n    : \"\" \n}}",
+            "ICP?": "Não"
+          },
+          "matchingColumns": [
+            "URL LinkedIn"
+          ],
+          "schema": [
+            {
+              "id": "URL LinkedIn",
+              "displayName": "URL LinkedIn",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Nome",
+              "displayName": "Nome",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Headline",
+              "displayName": "Headline",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "URL Comentario",
+              "displayName": "URL Comentario",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Comentário",
+              "displayName": "Comentário",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ICP?",
+              "displayName": "ICP?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Decisor?",
+              "displayName": "Decisor?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Headline",
+              "displayName": "Headline",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Empresa",
+              "displayName": "Empresa",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "LinkedIn da empresa",
+              "displayName": "LinkedIn da empresa",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Sobre a empresa",
+              "displayName": "Sobre a empresa",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Numero de funcionarios",
+              "displayName": "Numero de funcionarios",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Numero de funcionarios",
+              "displayName": "Numero de funcionarios",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "LinkedIn do decisor",
+              "displayName": "LinkedIn do decisor",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Site da empresa",
+              "displayName": "Site da empresa",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Mensagem de prospecção",
+              "displayName": "Mensagem de prospecção",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Entrou em Contato?",
+              "displayName": "Entrou em Contato?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        3120,
+        -208
+      ],
+      "id": "3b56672a-75f4-471b-8f89-5d7a47965903",
+      "name": "Update row in sheet - Not ICP",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "479PdELkIbVgs67c",
+          "name": "Google Sheets - Giovanni"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "290bbc9c-46a8-4524-9a43-33df40953c02",
+              "leftValue": "={{ $json.output.ICP }}",
+              "rightValue": "SIM",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2928,
+        -496
+      ],
+      "id": "fb78bf62-b87d-4ca9-8a09-fe05036f73ec",
+      "name": "If ICP"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1XkRpo_u06IhdHL57ViM05GQmdNGpj3HHjDF5fsROQ0E",
+          "mode": "list",
+          "cachedResultName": "Planilha Leads Synapso",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1XkRpo_u06IhdHL57ViM05GQmdNGpj3HHjDF5fsROQ0E/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Página1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1XkRpo_u06IhdHL57ViM05GQmdNGpj3HHjDF5fsROQ0E/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "URL LinkedIn": "={{ \n  $node[\"Get profile Data\"].json.basic_info?.profile_url\n    ? $node[\"Get profile Data\"].json.basic_info.profile_url\n        .split('?')[0]                  // remove parâmetros\n        .replace(/^https?:\\/\\/(www\\.)?/, 'https://www.') // garante www.\n        .replace(/\\/+$/, '')            // remove barra no final\n    : \"\" \n}}",
+            "ICP?": "Não"
+          },
+          "matchingColumns": [
+            "URL LinkedIn"
+          ],
+          "schema": [
+            {
+              "id": "URL LinkedIn",
+              "displayName": "URL LinkedIn",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Nome",
+              "displayName": "Nome",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Headline",
+              "displayName": "Headline",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "URL Comentario",
+              "displayName": "URL Comentario",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Comentário",
+              "displayName": "Comentário",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ICP?",
+              "displayName": "ICP?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Decisor?",
+              "displayName": "Decisor?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Empresa",
+              "displayName": "Empresa",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "LinkedIn da empresa",
+              "displayName": "LinkedIn da empresa",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Sobre a empresa",
+              "displayName": "Sobre a empresa",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Numero de funcionarios",
+              "displayName": "Numero de funcionarios",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "LinkedIn do decisor",
+              "displayName": "LinkedIn do decisor",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Site da empresa",
+              "displayName": "Site da empresa",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Mensagem de prospecção",
+              "displayName": "Mensagem de prospecção",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Entrou em Contato?",
+              "displayName": "Entrou em Contato?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1952,
+        -32
+      ],
+      "id": "0df6e260-62f3-4d30-8171-b6dcc6b5e5b3",
+      "name": "Update row in sheet - Has no Work",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "479PdELkIbVgs67c",
+          "name": "Google Sheets - Giovanni"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 21
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        96,
+        -208
+      ],
+      "id": "a1d00f53-148f-4e69-b7a4-e5dc1ba514a7",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "c60c814e-c828-4bed-824c-951d2ea25119",
+              "leftValue": "={{ $json['Day of week'] }}",
+              "rightValue": " Saturday",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "26fbd20f-c37c-433c-8809-7534b651bed0",
+              "leftValue": "={{ $json['Day of week'] }}",
+              "rightValue": "Sunday",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        416,
+        -208
+      ],
+      "id": "a02adb51-8c90-4061-acff-9aa861bd5229",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1XkRpo_u06IhdHL57ViM05GQmdNGpj3HHjDF5fsROQ0E",
+          "mode": "list",
+          "cachedResultName": "Planilha Leads Synapso",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1XkRpo_u06IhdHL57ViM05GQmdNGpj3HHjDF5fsROQ0E/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Página1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1XkRpo_u06IhdHL57ViM05GQmdNGpj3HHjDF5fsROQ0E/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "URL LinkedIn": "={{ \n  $node[\"Get profile Data\"].json.basic_info?.profile_url\n    ? $node[\"Get profile Data\"].json.basic_info.profile_url\n        .split('?')[0]                  // remove parâmetros\n        .replace(/^https?:\\/\\/(www\\.)?/, 'https://www.') // garante www.\n        .replace(/\\/+$/, '')            // remove barra no final\n    : \"\" \n}}",
+            "ICP?": "Sim",
+            "Decisor?": "Sim",
+            "Sobre a empresa": "={{ $('All Prospect Data').item.json['Descrição'] }}",
+            "Empresa": "={{ $('All Prospect Data').item.json.Empresa }}",
+            "LinkedIn da empresa": "={{ $('Get Company Data').item.json.basic_info.linkedin_url }}",
+            "LinkedIn do decisor": "={{ $('Get profile Data').item.json.basic_info.profile_url }}",
+            "Numero de funcionarios": "={{ $('All Prospect Data').item.json['Numero de funcionarios'] }}",
+            "Site da empresa": "={{ $('Get Company Data').item.json.basic_info.website }}",
+            "row_number": 0
+          },
+          "matchingColumns": [
+            "URL LinkedIn"
+          ],
+          "schema": [
+            {
+              "id": "URL LinkedIn",
+              "displayName": "URL LinkedIn",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Nome",
+              "displayName": "Nome",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Headline",
+              "displayName": "Headline",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "URL Comentario",
+              "displayName": "URL Comentario",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Comentário",
+              "displayName": "Comentário",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "ICP?",
+              "displayName": "ICP?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Decisor?",
+              "displayName": "Decisor?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Empresa",
+              "displayName": "Empresa",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "LinkedIn da empresa",
+              "displayName": "LinkedIn da empresa",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Sobre a empresa",
+              "displayName": "Sobre a empresa",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Numero de funcionarios",
+              "displayName": "Numero de funcionarios",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "LinkedIn do decisor",
+              "displayName": "LinkedIn do decisor",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Site da empresa",
+              "displayName": "Site da empresa",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Mensagem de prospecção",
+              "displayName": "Mensagem de prospecção",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Entrou em Contato?",
+              "displayName": "Entrou em Contato?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        4288,
+        -16
+      ],
+      "id": "811fd07d-05b6-4a76-b008-14ea4fb790b2",
+      "name": "Update row in sheet",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "479PdELkIbVgs67c",
+          "name": "Google Sheets - Giovanni"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        2368,
+        -496
+      ],
+      "id": "3f79106e-5d54-45cd-886e-2704f19bb779",
+      "name": "Wait",
+      "webhookId": "46ec553e-9f49-4104-aa6d-eb7f7b40856e"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Get row(s) in sheet1": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items2": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Get profile Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Has company?": {
+      "main": [
+        [
+          {
+            "node": "Get Company Data",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Update row in sheet - Has no Work",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get profile Data": {
+      "main": [
+        [
+          {
+            "node": "Has company?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Company Data": {
+      "main": [
+        [
+          {
+            "node": "All Prospect Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "All Prospect Data": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Analisador de Prospects",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analisador de Prospects": {
+      "main": [
+        [
+          {
+            "node": "If ICP",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Analisador de Prospects",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If ICP": {
+      "main": [
+        [
+          {
+            "node": "Update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Update row in sheet - Not ICP",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Get row(s) in sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update row in sheet - Has no Work": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update row in sheet - Not ICP": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Analisador de Prospects",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "timezone": "America/Sao_Paulo",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false,
+    "timeSavedMode": "fixed",
+    "saveExecutionProgress": true
+  },
+  "versionId": "057c40cb-dcff-42fe-aa66-35774c258058",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "af215a5d3f41f5d666eba163e970f3ebff7674c5de9db6a2ce2f219f6b96f2a9"
+  },
+  "id": "rwgjWP8u5LDUlo5p",
+  "tags": []
+}

@@ -1,0 +1,703 @@
+{
+  "name": "LinkedIn Comments Lead generator",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## Pesquisa por perfil\nTodo dia às 20h ele pesquisa o último post dos perfis, e caso tenham novos posts ele realiza o scrapping \ndos perfis que comentaram. Ao final ele inicia o próximo subworkflow.\n",
+        "height": 336,
+        "width": 1328
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1232,
+        1968
+      ],
+      "id": "48c8ef4b-eae8-463b-b0c2-d570dd7617ae",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "content": "## Comment Scrape\nExtrai todos os comentários do post colocado no Formulário de Input, passando por uma limpeza de dados inválidos e/ou pessoas que comentam mais de uma vez.",
+        "height": 336,
+        "width": 1040,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2560,
+        1968
+      ],
+      "id": "773b177b-8802-43f7-8495-3c6e6dac8d62",
+      "name": "Sticky Note5"
+    },
+    {
+      "parameters": {
+        "content": "## Registro em Planilha\nRegistra os perfis das pessoas que comentaram no Post selecionado em uma planilha.",
+        "height": 336,
+        "width": 896,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        3600,
+        1968
+      ],
+      "id": "a2dce477-4e51-4c81-8f20-caf367f4f810",
+      "name": "Sticky Note6"
+    },
+    {
+      "parameters": {
+        "content": "# Geração de Leads por Comentários LinkedIn - Apify\n",
+        "height": 480,
+        "width": 3424,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1216,
+        1888
+      ],
+      "id": "578f8da8-e15c-42d8-aed5-4f85a8583c92",
+      "name": "Sticky Note7"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1XkRpo_u06IhdHL57ViM05GQmdNGpj3HHjDF5fsROQ0E",
+          "mode": "list",
+          "cachedResultName": "Planilha Leads Synapso",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1XkRpo_u06IhdHL57ViM05GQmdNGpj3HHjDF5fsROQ0E/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Página1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1XkRpo_u06IhdHL57ViM05GQmdNGpj3HHjDF5fsROQ0E/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Nome": "={{ $('Remove Duplicate2').item.json['author.name'] }}",
+            "Headline": "={{ $('Remove Duplicate2').item.json['author.headline'] }}",
+            "URL LinkedIn": "={{ $('Remove Duplicate2').item.json['author.profile_url'] }}",
+            "URL Comentario": "={{ $('Remove Duplicate2').item.json.comment_url }}",
+            "Comentário": "={{ $('Remove Duplicate2').item.json.text }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "URL LinkedIn",
+              "displayName": "URL LinkedIn",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Nome",
+              "displayName": "Nome",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Headline",
+              "displayName": "Headline",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "URL Comentario",
+              "displayName": "URL Comentario",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Comentário",
+              "displayName": "Comentário",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ICP?",
+              "displayName": "ICP?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Decisor?",
+              "displayName": "Decisor?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Empresa",
+              "displayName": "Empresa",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "LinkedIn da empresa",
+              "displayName": "LinkedIn da empresa",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Sobre a empresa",
+              "displayName": "Sobre a empresa",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Numero de funcionarios",
+              "displayName": "Numero de funcionarios",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "LinkedIn do decisor",
+              "displayName": "LinkedIn do decisor",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Site da empresa",
+              "displayName": "Site da empresa",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Mensagem de prospecção",
+              "displayName": "Mensagem de prospecção",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Entrou em Contato?",
+              "displayName": "Entrou em Contato?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        4080,
+        2096
+      ],
+      "id": "f8167e15-f1ab-4eeb-b859-907b51df4d3e",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "479PdELkIbVgs67c",
+          "name": "Google Sheets - Giovanni"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 19
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        1264,
+        2064
+      ],
+      "id": "127ffeb4-e930-4090-aa58-bed9a01b01d5",
+      "name": "Schedule Trigger1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "e2333a86-8c22-4e22-ab6b-460050e4172a",
+              "leftValue": "={{ $json['Day of week'] }}",
+              "rightValue": "Saturday",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            },
+            {
+              "id": "77afcabd-a8b3-469b-b4b1-77a499a05fe3",
+              "leftValue": "={{ $json['Day of week'] }}",
+              "rightValue": "Sunday",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1472,
+        2064
+      ],
+      "id": "7d4a045b-ee34-41b6-843c-02f25368a20d",
+      "name": "If4"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1p29PoE6-GHi43twSilBM59ngE_XaDdVOHgD24fq-ZX4",
+          "mode": "list",
+          "cachedResultName": "Planilha Perfis de Prospecção",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1p29PoE6-GHi43twSilBM59ngE_XaDdVOHgD24fq-ZX4/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Página1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1p29PoE6-GHi43twSilBM59ngE_XaDdVOHgD24fq-ZX4/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1696,
+        2080
+      ],
+      "id": "83e1abf2-1ee4-49c2-a65d-81eb5fb918ae",
+      "name": "Get row(s) in sheet2",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "479PdELkIbVgs67c",
+          "name": "Google Sheets - Giovanni"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        1872,
+        2080
+      ],
+      "id": "78337792-a3c2-469d-b00f-ab8caf9b25f9",
+      "name": "Loop Over Items1"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1p29PoE6-GHi43twSilBM59ngE_XaDdVOHgD24fq-ZX4",
+          "mode": "list",
+          "cachedResultName": "Planilha Perfis de Prospecção",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1p29PoE6-GHi43twSilBM59ngE_XaDdVOHgD24fq-ZX4/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Página1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1p29PoE6-GHi43twSilBM59ngE_XaDdVOHgD24fq-ZX4/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Último Post": "={{ $json.url }}",
+            "Link de Perfil": "={{ $('Get row(s) in sheet2').item.json['Link de Perfil'] }}"
+          },
+          "matchingColumns": [
+            "Link de Perfil"
+          ],
+          "schema": [
+            {
+              "id": "Nome",
+              "displayName": "Nome",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Link de Perfil",
+              "displayName": "Link de Perfil",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Último Post",
+              "displayName": "Último Post",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        2416,
+        2096
+      ],
+      "id": "bb1ffb71-eaf1-4b5f-b1fc-f6ad22cf9e04",
+      "name": "Update row in sheet1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "479PdELkIbVgs67c",
+          "name": "Google Sheets - Giovanni"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f6c9a5b8-f032-4c22-877c-abf498409b50",
+              "name": "url_post",
+              "value": "={{ $json['Último Post'] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2592,
+        2096
+      ],
+      "id": "93d085e5-d7b8-4025-bb71-aea62f774f1f",
+      "name": "Set_URL"
+    },
+    {
+      "parameters": {
+        "url": "https://api.apify.com/v2/acts/apimaestro~linkedin-post-comments-replies-engagements-scraper-no-cookies/run-sync-get-dataset-items?token=apify_api_",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n    \"postIds\": [\n        \"{{ $json.url_post }}\"\n    ]\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        2816,
+        2096
+      ],
+      "id": "cb40f96f-94cc-4d1e-9009-a541597eeb57",
+      "name": "APIFY - Get Comments"
+    },
+    {
+      "parameters": {
+        "url": "https://api.apify.com/v2/acts/apimaestro~linkedin-profile-posts/run-sync-get-dataset-items?token=apify_api_",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n    \"limit\": 1,\n    \"username\": \"{{ $('Get row(s) in sheet2').item.json['Link de Perfil'] }}\"\n} ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        2128,
+        2096
+      ],
+      "id": "dcaaac5c-6ef6-4e5b-adf5-74ceebda32a6",
+      "name": "Scrapping de perfis de conteudo1"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "author.name",
+        "include": "selectedOtherFields",
+        "fieldsToInclude": "author.headline, , author.profile_url, comment_url, text",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        3264,
+        2080
+      ],
+      "id": "c2c45e64-adea-422f-9113-71d4a32868f7",
+      "name": "Split Data1"
+    },
+    {
+      "parameters": {
+        "compare": "selectedFields",
+        "fieldsToCompare": "['author.profile_url']",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.removeDuplicates",
+      "typeVersion": 2,
+      "position": [
+        3472,
+        2080
+      ],
+      "id": "486719c2-960f-49df-ac5d-f5222e6bfef7",
+      "name": "Remove Duplicate2"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Append row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger1": {
+      "main": [
+        [
+          {
+            "node": "If4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If4": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Get row(s) in sheet2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet2": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items1": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Scrapping de perfis de conteudo1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update row in sheet1": {
+      "main": [
+        [
+          {
+            "node": "Set_URL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set_URL": {
+      "main": [
+        [
+          {
+            "node": "APIFY - Get Comments",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "APIFY - Get Comments": {
+      "main": [
+        [
+          {
+            "node": "Split Data1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Scrapping de perfis de conteudo1": {
+      "main": [
+        [
+          {
+            "node": "Update row in sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Data1": {
+      "main": [
+        [
+          {
+            "node": "Remove Duplicate2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Remove Duplicate2": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "timeSavedMode": "fixed",
+    "saveExecutionProgress": true,
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "versionId": "26ed1d5e-dd3a-4142-b43a-452060b0a0d1",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "af215a5d3f41f5d666eba163e970f3ebff7674c5de9db6a2ce2f219f6b96f2a9"
+  },
+  "id": "WYjszG2SrQwRRJ4c",
+  "tags": [
+    {
+      "updatedAt": "2025-12-02T17:48:30.719Z",
+      "createdAt": "2025-12-02T17:48:30.719Z",
+      "id": "LiR1SVT0j2xe9zPS",
+      "name": "Webinar"
+    }
+  ]
+}

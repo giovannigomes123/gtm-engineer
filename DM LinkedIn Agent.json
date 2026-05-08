@@ -1,0 +1,491 @@
+{
+  "name": "DM LinkedIn Agent",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 22
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        -48
+      ],
+      "id": "e44106fe-b26d-439d-9137-628bf570c646",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1XkRpo_u06IhdHL57ViM05GQmdNGpj3HHjDF5fsROQ0E",
+          "mode": "list",
+          "cachedResultName": "Planilha Leads Synapso",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1XkRpo_u06IhdHL57ViM05GQmdNGpj3HHjDF5fsROQ0E/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Página1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1XkRpo_u06IhdHL57ViM05GQmdNGpj3HHjDF5fsROQ0E/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "ICP?",
+              "lookupValue": "Sim"
+            },
+            {
+              "lookupColumn": "Decisor?",
+              "lookupValue": "Sim"
+            },
+            {
+              "lookupColumn": "Mensagem de prospecção"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        208,
+        -48
+      ],
+      "id": "1f839c44-0201-4eb2-8938-527679c446c7",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "479PdELkIbVgs67c",
+          "name": "Google Sheets - Giovanni"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        448,
+        -48
+      ],
+      "id": "1c5e1fe8-d50b-48bd-a002-f583c8a07b6d",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "93835f59-342f-4adb-b677-5ad4ad1e3184",
+              "name": "Nome",
+              "value": "={{ $('Get row(s) in sheet').item.json.Nome }}",
+              "type": "string"
+            },
+            {
+              "id": "f2f97ce2-5d62-41f5-b0dc-7e78d52313b3",
+              "name": "Headline",
+              "value": "={{ $('Get row(s) in sheet').item.json.Headline }}",
+              "type": "string"
+            },
+            {
+              "id": "49352ea1-b72c-44ee-a757-f92530e697f8",
+              "name": "Empresa",
+              "value": "={{ $('Get row(s) in sheet').item.json.Empresa }}",
+              "type": "string"
+            },
+            {
+              "id": "56fde9f6-9f21-4573-b715-0abca17f0a7d",
+              "name": "Sobre a empresa",
+              "value": "={{ $('Get row(s) in sheet').item.json['Sobre a empresa'] }}",
+              "type": "string"
+            },
+            {
+              "id": "6198c509-092b-4b56-b1ec-c067497773ae",
+              "name": "Numero de funcionarios",
+              "value": "={{ $('Get row(s) in sheet').item.json['Numero de funcionarios'] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        720,
+        -32
+      ],
+      "id": "6359b1a4-f216-4a88-af4a-5b8057ca708f",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Informações Pessoais:\n- Nome: {{ $('Loop Over Items').item.json.Nome }}\n- Cargo: {{ $('Loop Over Items').item.json.Headline }}\n\n\nInformações Empresa:\n- Nome: {{ $('Loop Over Items').item.json.Empresa }}\n- Número de Funcionários: {{ $('Loop Over Items').item.json['Numero de funcionarios'] }}\n- Site: {{ $('Loop Over Items').item.json['Site da empresa'] }}\n- Descrição: {{ $('Loop Over Items').item.json['Sobre a empresa'] }}\n",
+        "options": {
+          "systemMessage": "# OBJETIVO\n\nVocê é um agente de pesquisa e preparação de contas para outbound consultivo.\n\nSeu objetivo NÃO é gerar mensagens genéricas de prospecção.\n\nSeu papel é:\n- analisar sinais públicos da empresa\n- identificar possíveis dores operacionais\n- levantar hipóteses relevantes\n- sugerir abordagens contextualizadas\n- preparar o operador humano para uma conversa mais inteligente\n\nA IA deve agir como copiloto do processo comercial, aumentando contexto e qualidade das abordagens sem transformar o processo em spam.\n\n---\n\n# CONTEXTO DA CLOUD HUMANS\n\nA Cloud Humans ajuda empresas digitais a escalar atendimento e operações utilizando IA aplicada à experiência do cliente.\n\nPrincipais soluções:\n- ClaudIA → agente de IA para atendimento\n- Cloud Chat → centralização de canais e WhatsApp\n- automação operacional\n- IA aplicada ao suporte e relacionamento\n- redução de carga operacional\n- melhoria de SLA e experiência do cliente\n\nA abordagem da empresa é consultiva, contextual e orientada a eficiência operacional.\n\n---\n\n# INPUT ESPERADO\n\nVocê receberá:\n\n## Informações do lead\n- Nome\n- Cargo\n- LinkedIn\n\n## Informações da empresa\n- Nome da empresa\n- Site\n- Descrição\n- Quantidade de funcionários\n- Segmento\n- LinkedIn da empresa\n\n---\n\n# PESQUISA E ENRIQUECIMENTO\n\nAntes de responder:\n\n1. Analise a descrição da empresa\n2. Analise o site (quando disponível)\n3. Identifique sinais relacionados a:\n   - crescimento\n   - operação digital\n   - IA\n   - CX\n   - suporte\n   - onboarding\n   - escala operacional\n   - WhatsApp\n   - automação\n4. Identifique possíveis stakeholders relevantes\n5. Levante possíveis dores operacionais\n\n---\n\n# REGRAS IMPORTANTES\n\n## NÃO:\n- vender diretamente\n- usar pitch agressivo\n- gerar mensagem genérica\n- usar linguagem robótica\n- usar emojis\n- usar buzzwords sem contexto\n- inventar informações\n\n## SIM:\n- gerar hipóteses inteligentes\n- usar sinais públicos reais\n- criar contexto relevante\n- manter tom humano e natural\n- parecer uma conversa real\n- ser curto e direto\n\n---\n\n# OBJETIVO DA ABORDAGEM\n\nA abordagem deve:\n- iniciar conversa\n- demonstrar contexto\n- mostrar pesquisa\n- levantar hipótese relevante\n- gerar curiosidade\n- evitar sensação de spam\n\nO foco NÃO é fechar reunião imediatamente.\n\nO foco é gerar uma conversa relevante.\n\n---\n\n# ESTRUTURA DA SAÍDA\n\nRetorne:\n\n## 1. Resumo executivo da conta\n- resumo curto da empresa\n- sinais relevantes encontrados\n- possíveis dores\n\n---\n\n## 2. Hipóteses levantadas\nListe:\n- possíveis gargalos\n- desafios operacionais\n- oportunidades para IA/CX\n\n---\n\n## 3. Stakeholders sugeridos\nListe:\n- cargos mais relevantes\n- motivo da escolha\n\n---\n\n## 4. Sugestão de abordagem inicial\n\nA mensagem deve:\n- ser curta\n- natural\n- contextual\n- consultiva\n\nModelo esperado:\n\n\"Oi {primeiro_nome}, tudo certo?\n\nVi que a {empresa} vem investindo bastante em {sinal identificado} e fiquei curioso sobre como vocês estão lidando com {hipótese operacional}.\n\nTenho visto muitas empresas digitais enfrentando desafios relacionados a escala operacional e atendimento sem crescimento proporcional de time.\n\nImagino que isso talvez também esteja passando por aí.\"\n\n---\n\n# TOM\n\n- Conversacional\n- Consultivo\n- Inteligente\n- Objetivo\n- Sem parecer automação\n- Sem exagero comercial\n\n---\n\n# OUTPUT\n\nRetorne APENAS:\n\n1. Resumo executivo\n2. Hipóteses\n3. Stakeholders\n4. Mensagem inicial\n\nSem comentários adicionais."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        1072,
+        -32
+      ],
+      "id": "bccf9f80-dcd9-4b9d-9ddc-bcf379979a0e",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        1072,
+        160
+      ],
+      "id": "22414e30-091f-4e4e-8f64-144a9f7c2f45",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "i7mWFBHDgvfkKOyf",
+          "name": "Giovanni_Credential"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1XkRpo_u06IhdHL57ViM05GQmdNGpj3HHjDF5fsROQ0E",
+          "mode": "list",
+          "cachedResultName": "Planilha Leads Synapso",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1XkRpo_u06IhdHL57ViM05GQmdNGpj3HHjDF5fsROQ0E/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Página1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1XkRpo_u06IhdHL57ViM05GQmdNGpj3HHjDF5fsROQ0E/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "URL LinkedIn": "={{\n  $('Loop Over Items').item.json['URL LinkedIn']\n    ? $('Loop Over Items').item.json['URL LinkedIn']\n        .split('?')[0]                               // remove parâmetros\n        .replace(/^https?:\\/\\/(www\\.)?/, 'https://www.')  // força www.\n        .replace(/\\/+$/, '')                         // remove barra final\n    : \"\"\n}}",
+            "Entrou em Contato?": "Não",
+            "Email": "",
+            "Mensagem de prospecção": "={{ $json.output }}"
+          },
+          "matchingColumns": [
+            "URL LinkedIn"
+          ],
+          "schema": [
+            {
+              "id": "Nome",
+              "displayName": "Nome",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Headline",
+              "displayName": "Headline",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "URL LinkedIn",
+              "displayName": "URL LinkedIn",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "URL Comentario",
+              "displayName": "URL Comentario",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Comentário",
+              "displayName": "Comentário",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ICP?",
+              "displayName": "ICP?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Decisor?",
+              "displayName": "Decisor?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Headline",
+              "displayName": "Headline",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Empresa",
+              "displayName": "Empresa",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "LinkedIn da empresa",
+              "displayName": "LinkedIn da empresa",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Sobre a empresa",
+              "displayName": "Sobre a empresa",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Numero de funcionarios",
+              "displayName": "Numero de funcionarios",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Numero de funcionarios",
+              "displayName": "Numero de funcionarios",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "LinkedIn do decisor",
+              "displayName": "LinkedIn do decisor",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Site da empresa",
+              "displayName": "Site da empresa",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Mensagem de prospecção",
+              "displayName": "Mensagem de prospecção",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Entrou em Contato?",
+              "displayName": "Entrou em Contato?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1424,
+        144
+      ],
+      "id": "fec5e8e7-1543-45e9-94ed-84ad764d2e0f",
+      "name": "Update row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "479PdELkIbVgs67c",
+          "name": "Google Sheets - Giovanni"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "3682dec2-bb32-4b9a-af79-fb4420c8b9fe",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "af215a5d3f41f5d666eba163e970f3ebff7674c5de9db6a2ce2f219f6b96f2a9"
+  },
+  "id": "V0MyFoV4O1yO9pRJ",
+  "tags": []
+}
